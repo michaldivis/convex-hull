@@ -62,7 +62,7 @@ public static class GrahamScan
         }
 
         // evaluate the last 2 points against the first point
-        if (GetDirection(convexHull[^2], convexHull[^1], convexHull[0]) == Direction.Right)
+        if (GetDirection(convexHull[^2], convexHull[^1], convexHull[0]) != Direction.Left)
         {
             convexHull.Remove(convexHull[^1]);
         }
