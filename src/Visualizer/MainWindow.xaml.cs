@@ -1,5 +1,6 @@
 ﻿using Domain;
 using SkiaSharp;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace Visualizer;
@@ -15,6 +16,12 @@ public partial class MainWindow : Window
     private readonly SKPaint _convexHullPointPaint = new()
     {
         Color = SKColor.Parse("#67e8f9"),
+        IsAntialias = true,
+    };
+
+    private readonly SKPaint _originPointPaint = new()
+    {
+        Color = SKColor.Parse("#22c55e"),
         IsAntialias = true,
     };
 
@@ -38,6 +45,8 @@ public partial class MainWindow : Window
         var canvas = surface.Canvas;
 
         canvas.Clear();
+
+        canvas.RotateDegrees(180, 250, 250);
 
         canvas.DrawColor(SKColor.Parse("#030712"));
 
@@ -67,6 +76,8 @@ public partial class MainWindow : Window
         {
             canvas.DrawCircle(new SKPoint(point.X, point.Y), _pointRadius, _convexHullPointPaint);
         }
+
+        canvas.DrawCircle(new SKPoint(convexHullPoints[0].X, convexHullPoints[0].Y), _pointRadius, _originPointPaint);
     }
 
     private void Generate(object sender, RoutedEventArgs e) => skElement.InvalidateVisual();

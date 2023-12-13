@@ -40,27 +40,53 @@ public class GrahamScanTests
         // Arrange
         var points = new Point[]
         {
-            new(65, 397),
-            new(430, 130),
-            new(179, 400),
-            new(372, 400),
-            new(453, 160),
-            new(207, 76),
-            new(279, 101),
-            new(311, 303),
-            new(426, 150),
-            new(353, 45),
+            new(1, 0),
+            new(2, 1),
+            new(3, 1),
+            new(3, 3),
+            new(2, 2),
+            new(1, 4),
+            new(1, 2),
+            new(0, 1),
         };
 
         var expected = new Point[]
         {
-            new(430, 130),
-            new(453, 160),
-            new(372, 400),
-            new(179, 400),
-            new(65, 397),
-            new(207, 76),
-            new(353, 45),
+            new(1, 0),
+            new(3, 1),
+            new(3, 3),
+            new(1, 4),
+            new(0, 1),
+        };
+
+        // Act
+        var result = GrahamScan.ConvexHull(points);
+
+        // Assert
+        result.Should().HaveCount(expected.Length);
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ConvexHull_MoreThan3Points_IgnoresPointsWithCollinearDirection()
+    {
+        // Arrange
+        var points = new Point[]
+        {
+            new(0, 0),
+            new(1, 1),
+            new(2, 2),
+            new(1, 3),
+            new(1, 2),
+            new(0, 2),
+        };
+
+        var expected = new Point[]
+        {
+            new(0, 0),
+            new(2, 2),
+            new(1, 3),
+            new(0, 2),
         };
 
         // Act
@@ -129,7 +155,7 @@ public class GrahamScanTests
         };
 
         // Act
-        var result = GrahamScan.FindPointWithTheLowestY(points);
+        var result = GrahamScan.FindPointWithTheLowestYCoordinate(points);
 
         // Assert
         result.Should().Be(new Point(1, -1));
@@ -143,7 +169,7 @@ public class GrahamScanTests
         var b = new Point(1, 1);
 
         // Act
-        var result = GrahamScan.GetAngle(a, b);
+        var result = GrahamScan.GetAngleAgainstXAxis(a, b);
 
         // Assert
         result.Should().BeApproximately(Math.PI / 4, 0.0001);

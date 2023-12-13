@@ -15,10 +15,10 @@ public static class GrahamScan
             return points;
         }
 
-        var reference = FindPointWithTheLowestY(points);
+        var reference = FindPointWithTheLowestYCoordinate(points);
 
         // sort the points in increasing order of the angle they and the reference point make with the x-axis
-        var angleComparison = new Comparison<Point>((a, b) => GetAngle(a, reference).CompareTo(GetAngle(b, reference)));
+        var angleComparison = new Comparison<Point>((a, b) => ComparePointsByAngleFromReferenceAndYCoordinate(a, b, reference));
         var convexHull = new List<Point>(points);
         convexHull.Sort(angleComparison);
 
@@ -26,15 +26,16 @@ public static class GrahamScan
         var bIndex = 1;
         var cIndex = 2;
 
+        // Loop through the points, looking at 3 points at a time
         while (true)
         {
             var a = convexHull[aIndex];
             var b = convexHull[bIndex];
             var c = convexHull[cIndex];
-            
-            if (GetDirection(a, b, c) == Direction.Right)
+
+            if (GetDirection(a, b, c) != Direction.Left)
             {
-                // If moving from B to C makes a right turn relative to moving from A to B, remove B as it's inside the hull
+                // If the direction when moving from B to C is'nt a left turn relative to moving from A to B, remove B as it's inside the hull or on the edge of the hull
                 convexHull.Remove(b);
 
                 // If possible, re-evaluate the previous 3 points
@@ -54,7 +55,7 @@ public static class GrahamScan
             }
 
             // If the last point is reached, break the cycle
-            if (cIndex >= convexHull.Count - 1)
+            if (cIndex >= convexHull.Count)
             {
                 break;
             }
@@ -82,7 +83,7 @@ public static class GrahamScan
         };
     }
 
-    internal static Point FindPointWithTheLowestY(Point[] points)
+    internal static Point FindPointWithTheLowestYCoordinate(Point[] points)
     {
         var candidate = points[0];
 
@@ -106,5 +107,18 @@ public static class GrahamScan
         return candidate;
     }
 
-    internal static double GetAngle(Point a, Point b) => Math.Atan2(b.Y - a.Y, b.X - a.X);
+    internal static int ComparePointsByAngleFromReferenceAndYCoordinate(Point a, Point b, Point reference)
+    {
+        var angleA = GetAngleAgainstXAxis(reference, a);
+        var angleB = GetAngleAgainstXAxis(reference, b);
+
+        if (angleA != angleB)
+        {
+            return angleA.CompareTo(angleB);
+        }
+
+        return a.Y.CompareTo(b.Y);
+    }
+
+    internal static double GetAngleAgainstXAxis(Point a, Point b) => Math.Atan2(b.Y - a.Y, b.X - a.X);
 }
