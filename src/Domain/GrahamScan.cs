@@ -9,7 +9,7 @@ public static class GrahamScan
     {
         ArgumentNullException.ThrowIfNull(points);
 
-        // if there are 3 or less points, all of the make up the convex hull
+        // if there are 3 or less points, all of the makem up the convex hull
         if (points.Length <= 3)
         {
             return points;
@@ -18,7 +18,8 @@ public static class GrahamScan
         var reference = FindPointWithTheLowestYCoordinate(points);
 
         // sort the points in increasing order of the angle they and the reference point make with the x-axis
-        var angleComparison = new Comparison<Point>((a, b) => ComparePointsByAngleFromReferenceAndYCoordinate(a, b, reference));
+        // additionally, if two or more points share the same angle, sort those by the distance from reference
+        var angleComparison = new Comparison<Point>((a, b) => ComparePointsByAngleFromReference(a, b, reference));
         var convexHull = new List<Point>(points);
         convexHull.Sort(angleComparison);
 
@@ -26,7 +27,7 @@ public static class GrahamScan
         var bIndex = 1;
         var cIndex = 2;
 
-        // Loop through the points, looking at 3 points at a time
+        // Loop through the points, evaluating 3 points at a time
         while (true)
         {
             var a = convexHull[aIndex];
@@ -97,6 +98,7 @@ public static class GrahamScan
                 continue;
             }
 
+            // is two points share the same Y coordinate, take the one with the lower X value
             if (point.Y == candidate.Y && point.X < candidate.X)
             {
                 candidate = point;
@@ -107,7 +109,7 @@ public static class GrahamScan
         return candidate;
     }
 
-    internal static int ComparePointsByAngleFromReferenceAndYCoordinate(Point a, Point b, Point reference)
+    internal static int ComparePointsByAngleFromReference(Point a, Point b, Point reference)
     {
         var angleA = GetAngleAgainstXAxis(reference, a);
         var angleB = GetAngleAgainstXAxis(reference, b);
@@ -117,6 +119,7 @@ public static class GrahamScan
             return angleA.CompareTo(angleB);
         }
 
+        // when the angles are identical, compare the Y coordinates
         return a.Y.CompareTo(b.Y);
     }
 
